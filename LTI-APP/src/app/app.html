@@ -1,0 +1,17 @@
+<h1>{{ entityName() }}</h1>
+
+<h2>最近3年 EPS 同期比較</h2>
+
+<div 
+  echarts 
+  [options]="optionsEpsYoy"
+  (chartInit)="onEpsYoyBarChartInit($event)"
+></div>
+
+<h2>最近10年 EPS vs 股利</h2>
+
+<div 
+  echarts 
+  [options]="optionsEpsVsDividends"
+  (chartInit)="onEpsVsDividendsBarChartInit($event)"
+></div>
