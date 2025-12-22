@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import * as echarts from 'echarts/core';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
@@ -8,12 +8,21 @@ import { CanvasRenderer } from 'echarts/renderers';
 import { ECharts, EChartsOption } from 'echarts';
 import { ApiService } from './api.service';
 import { forkJoin } from 'rxjs';
+import { MatSelect, MatSelectModule } from '@angular/material/select';
+import { CommonModule } from '@angular/common';
+import { Title } from '@angular/platform-browser';
 
 echarts.use([BarChart, GridComponent, CanvasRenderer, LegendComponent, TooltipComponent, BrushComponent, ToolboxComponent]);
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NgxEchartsDirective, NgxEchartsDirective],
+  imports: [
+    CommonModule,
+    // RouterOutlet,
+    NgxEchartsDirective,
+    NgxEchartsDirective,
+    MatSelectModule,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css',
   providers: [
@@ -21,9 +30,8 @@ echarts.use([BarChart, GridComponent, CanvasRenderer, LegendComponent, TooltipCo
   ]
 })
 export class App {
-  protected readonly title = signal('LTI-APP');
-
-  entityName = signal('');
+  selectedStockId!: string;
+  entities: any[] = [];
 
   epsYoyBarChart!: ECharts;
   optionsEpsYoy!: EChartsOption;
@@ -31,35 +39,55 @@ export class App {
   epsVsDividendsBarChart!: ECharts;
   optionsEpsVsDividends!: EChartsOption;
 
+  @ViewChild("stockSelector")
+  stockSelector!: MatSelect;
+
   constructor(
     private apiService: ApiService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private title: Title
   ) {
   }
 
   ngOnInit(): void {
+    this.apiService.getEntities()
+      .subscribe(x => {
+        this.entities = x;
+
+        this.stockSelector.focus();
+
+        if(this.selectedStockId) {
+          let entity = this.entities.filter(y => y.id === this.selectedStockId)[0];
+          this.title.setTitle(`${entity.id} ${entity.name}`);
+        }
+      });
+
     this.route.queryParamMap.subscribe(params => {
       let id: any = params.get('id');
 
-      if(id) {
-        this.apiService.getEntities()
-          .subscribe(x => {
-            this.entityName.set(`${id} ${x.filter(y => y.id === id)[0]?.name}`);
-          });
-
-        forkJoin([
-          this.apiService.getEps(id),
-          this.apiService.getDividends(id)
-        ])
-        .subscribe(x => {
-          this.renderEpsYoy(x[0]);
-          this.renderEpsVsDividends(x[0], x[1]);
-        });
+      if (id) {
+        this.selectedStockId = id;
+        this.fetch();
       }
     });
 
     this.renderEpsYoy([]);
     this.renderEpsVsDividends([], []);
+  }
+
+  fetch(): void {
+    forkJoin([
+      this.apiService.getEps(this.selectedStockId),
+      this.apiService.getDividends(this.selectedStockId)
+    ])
+    .subscribe(x => {
+      this.renderEpsYoy(x[0]);
+      this.renderEpsVsDividends(x[0], x[1]);
+    });
+  }
+
+  onStockSelectionChange(event: any) {
+    this.fetch();
   }
 
   onEpsYoyBarChartInit(echartsIntance: any) {
@@ -207,7 +235,7 @@ export class App {
       ]
     };
 
-    if(this.epsYoyBarChart) {
+    if (this.epsYoyBarChart) {
       this.epsYoyBarChart.setOption(this.optionsEpsYoy);
     }
   }
@@ -269,7 +297,7 @@ export class App {
 
     let stockDividends: (number | null)[] = [];
 
-    for(let i = 0; i < xAxisData.length ; i++) {
+    for (let i = 0; i < xAxisData.length; i++) {
       cashDividends.push(dataDividends.filter(x => x.year === xAxisData[i])[0]?.dividend_cash);
       stockDividends.push(dataDividends.filter(x => x.year === xAxisData[i])[0]?.dividend_stock);
     }
@@ -344,7 +372,7 @@ export class App {
       ]
     };
 
-    if(this.epsVsDividendsBarChart) {
+    if (this.epsVsDividendsBarChart) {
       this.epsVsDividendsBarChart.setOption(this.optionsEpsVsDividends);
     }
   }

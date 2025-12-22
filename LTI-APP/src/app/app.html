@@ -1,4 +1,17 @@
-<h1>{{ entityName() }}</h1>
+<div class="stock-selector">
+  <mat-form-field>
+    <mat-select 
+      [(value)]="selectedStockId"
+      (selectionChange)="onStockSelectionChange($event)"
+      placeholder="請選擇"
+      #stockSelector
+    >
+      @for (option of entities; track option) {
+        <mat-option [value]="option.id">{{ (`${option.id} ${option.name}`) }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
 
 <h2>最近3年 EPS 同期比較</h2>
 
