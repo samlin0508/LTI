@@ -30,7 +30,7 @@ echarts.use([BarChart, GridComponent, CanvasRenderer, LegendComponent, TooltipCo
   ]
 })
 export class App {
-  selectedStockId!: string;
+  selectedStockId: string = "2887";
   entities: any[] = [];
 
   epsYoyBarChart!: ECharts;
@@ -71,8 +71,7 @@ export class App {
       }
     });
 
-    this.renderEpsYoy([]);
-    this.renderEpsVsDividends([], []);
+    this.fetch();
   }
 
   fetch(): void {
