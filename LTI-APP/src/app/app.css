@@ -3,6 +3,10 @@
     text-align: center;
 }
 
+.mat-mdc-form-field {
+    margin-left: 10px;
+}
+
 h1, h2 {
     text-align: center;
     margin: 0;

@@ -1,19 +1,48 @@
 <div class="stock-selector">
   <mat-form-field>
+    <mat-label>股票代號</mat-label>
+
     <mat-select 
-      [(value)]="selectedStockId"
+      [formControl]="stockControl"
       (selectionChange)="onStockSelectionChange($event)"
       placeholder="請選擇"
-      #stockSelector
     >
       @for (option of entities; track option) {
         <mat-option [value]="option.id">{{ (`${option.id} ${option.name}`) }}</mat-option>
       }
     </mat-select>
   </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>EPS 同期比較</mat-label>
+
+    <mat-select 
+      [formControl]="lastNYearsOfEpsYoyControl"
+      (selectionChange)="onLastNYearsOfEpsYoySelectionChange($event)"
+      placeholder="請選擇"
+    >
+      @for (option of lastNYearsOfEpsYoy; track option) {
+        <mat-option [value]="option.id">{{ (`${option.name}`) }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>EPS vs 股利</mat-label>
+
+    <mat-select 
+      [formControl]="lastNYearsOfEpsVsDividendsControl"
+      (selectionChange)="onLastNYearsOfEpsVsDividendsSelectionChange($event)"
+      placeholder="請選擇"
+    >
+      @for (option of lastNYearsOfEpsVsDividends; track option) {
+        <mat-option [value]="option.id">{{ (`${option.name}`) }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
 </div>
 
-<h2>最近3年 EPS 同期比較</h2>
+<h2>EPS 同期比較</h2>
 
 <div 
   echarts 
@@ -21,7 +50,7 @@
   (chartInit)="onEpsYoyBarChartInit($event)"
 ></div>
 
-<h2>最近10年 EPS vs 股利</h2>
+<h2>EPS vs 股利</h2>
 
 <div 
   echarts 
