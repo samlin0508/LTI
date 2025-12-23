@@ -7,7 +7,7 @@ import { BrushComponent, GridComponent, LegendComponent, ToolboxComponent, Toolt
 import { CanvasRenderer } from 'echarts/renderers';
 import { ECharts, EChartsOption } from 'echarts';
 import { ApiService } from './api.service';
-import { debounceTime, distinctUntilChanged, forkJoin, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, debounceTime, distinctUntilChanged, forkJoin, Observable } from 'rxjs';
 import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
@@ -64,7 +64,7 @@ export class App {
     name: "最近10年"
   }];
 
-  paramStream: Subject<string> = new Subject<string>();
+  paramStream: BehaviorSubject<string> = new BehaviorSubject<string>("");
   paramStream$: Observable<string> = this.paramStream.asObservable();
 
   epsYoyBarChart!: ECharts;
@@ -84,21 +84,38 @@ export class App {
     this.renderEpsYoy([]);
     this.renderEpsVsDividends([], []);
 
+    // 方法一
+    // forkJoin([
+    //   this.apiService.getEntities(),
+    //   this.paramStream$
+    //     .pipe(
+    //       debounceTime(50),
+    //       distinctUntilChanged()
+    //     )
+    // ])
+    // .subscribe(x => {
+    //   this.entities = x[0];
+    //   this.stockControl.setValue(x[1]);
+    //   this.fetch();
+    // });
+
+    // 方法二
     this.apiService.getEntities()
       .subscribe(x => {
         this.entities = x;
-        this.stockControl.setValue(this.stockControl.value);
+
+        this.paramStream$
+          .pipe(
+            debounceTime(50),
+            distinctUntilChanged()
+          )
+          .subscribe(y => {
+            this.stockControl.setValue(y);
+            this.fetch();
+          });
       });
 
-    this.paramStream$
-      .pipe(
-        debounceTime(50),
-        distinctUntilChanged()
-      )
-      .subscribe(x => {
-        this.stockControl.setValue(x);
-        this.fetch();
-      });
+    this.paramStream.next("2887");
 
     this.route.queryParamMap.subscribe(params => {
       let id: any = params.get('id');
@@ -108,7 +125,13 @@ export class App {
       }
     });
 
-    this.paramStream.next("2887");
+    // 方法一
+    // setTimeout(
+    //   () => {
+    //     this.paramStream.complete();
+    //   },
+    //   100
+    // );
   }
 
   fetch(): void {
@@ -138,7 +161,7 @@ export class App {
 
   setTitle(): void {
     let entity = this.entities.filter(y => y.id === this.stockControl.value)[0];
-    this.title.setTitle(`${entity?.id} ${entity?.name}`);
+    this.title.setTitle(`${entity?.id ?? ""} ${entity?.name ?? ""} EPS 趨勢分析`);
   }
 
   onEpsYoyBarChartInit(echartsIntance: any) {
@@ -320,7 +343,22 @@ export class App {
           stack: 'EPS',
           emphasis: emphasisStyle,
           label: {
-            show: true
+            show: true,
+            formatter: (params) => {
+              let index = xAxisData.indexOf(+params.name);
+              let cash = cashDividends[index] ?? 0;
+              let stock = stockDividends[index] ?? 0;
+              let eps = params.value ? +params.value! : 0;
+              let payoutRatio = 0;
+
+              if(eps === 0) {
+                payoutRatio = 0;
+              } else {
+                payoutRatio = Math.round(((cash + stock) / eps) * 100);
+              }
+              
+              return `${params.value}\n(${payoutRatio}%)`;
+            }
           },
           data: eps
         },

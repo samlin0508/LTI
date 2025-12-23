@@ -12,9 +12,14 @@
       }
     </mat-select>
   </mat-form-field>
+</div>
 
+<h1>EPS 同期比較</h1>
+<h3>比較最近 N 年同月份的 EPS，可透過下方查看區間選擇欲查看的年份數。</h3>
+
+<div class="stock-selector">
   <mat-form-field>
-    <mat-label>EPS 同期比較</mat-label>
+    <mat-label>查看區間</mat-label>
 
     <mat-select 
       [formControl]="lastNYearsOfEpsYoyControl"
@@ -26,9 +31,20 @@
       }
     </mat-select>
   </mat-form-field>
+</div>
 
+<div 
+  echarts 
+  [options]="optionsEpsYoy"
+  (chartInit)="onEpsYoyBarChartInit($event)"
+></div>
+
+<h1>EPS vs 股利</h1>
+<h3>比較最近 N 年的 EPS 以及對應的股利（現金股利以及股票股利），可透過下方查看區間選擇欲查看的年份數。百分比表示當年度的配發率。</h3>
+
+<div class="stock-selector">
   <mat-form-field>
-    <mat-label>EPS vs 股利</mat-label>
+    <mat-label>查看區間</mat-label>
 
     <mat-select 
       [formControl]="lastNYearsOfEpsVsDividendsControl"
@@ -41,16 +57,6 @@
     </mat-select>
   </mat-form-field>
 </div>
-
-<h2>EPS 同期比較</h2>
-
-<div 
-  echarts 
-  [options]="optionsEpsYoy"
-  (chartInit)="onEpsYoyBarChartInit($event)"
-></div>
-
-<h2>EPS vs 股利</h2>
 
 <div 
   echarts 
