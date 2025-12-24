@@ -102,7 +102,18 @@ export class App {
     // 方法二
     this.apiService.getEntities()
       .subscribe(x => {
-        this.entities = x;
+        this.entities = x
+          .sort((a, b) => {
+            if (a.id > b.id) {
+              return 1;
+            }
+
+            if (a.id < b.id) {
+              return -1;
+            }
+
+            return 0;
+          });
 
         this.paramStream$
           .pipe(

@@ -1,14 +1,19 @@
-.stock-selector {
-    margin-top: 10px;
+h1, h2, h3 {
     text-align: center;
+    /* margin: 0; */
+    padding: 0;
 }
 
 .mat-mdc-form-field {
     margin-left: 10px;
 }
 
-h1, h2, h3 {
+.stock-selector {
+    margin-top: 10px;
     text-align: center;
-    /* margin: 0; */
-    padding: 0;
+}
+
+.tool-purpose {
+    width: 80%;
+    margin-left: 10%;
 }

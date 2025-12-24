@@ -1,6 +1,10 @@
+<h1>EPS 趨勢分析</h1>
+
+<h3>這是一個追蹤金控股 EPS 以及股利趨勢的小工具，主要是讓長期持有金控股的股民民有一個方便的介面可以快速掌握 EPS 動態以及過往股利的派發紀錄。</h3>
+
 <div class="stock-selector">
   <mat-form-field>
-    <mat-label>股票代號</mat-label>
+    <mat-label>公司代號</mat-label>
 
     <mat-select 
       [formControl]="stockControl"
@@ -14,8 +18,9 @@
   </mat-form-field>
 </div>
 
-<h1>EPS 同期比較</h1>
-<h3>比較最近 N 年同月份的 EPS，可透過下方查看區間選擇欲查看的年份數。</h3>
+<h2>EPS 同期比較</h2>
+
+<h3>比較最近 N 年同月份的 EPS，可以透過下方的查看區間選擇想要查看的年份。</h3>
 
 <div class="stock-selector">
   <mat-form-field>
@@ -39,8 +44,9 @@
   (chartInit)="onEpsYoyBarChartInit($event)"
 ></div>
 
-<h1>EPS vs 股利</h1>
-<h3>比較最近 N 年的 EPS 以及對應的股利（現金股利以及股票股利），可透過下方查看區間選擇欲查看的年份數。百分比表示當年度的配發率。</h3>
+<h2>EPS vs 股利</h2>
+
+<h3>比較最近 N 年的 EPS 以及對應的股利（現金股利以及股票股利），可以透過下方的查看區間選擇想要查看的年份。百分比表示當年度的配發率。</h3>
 
 <div class="stock-selector">
   <mat-form-field>
@@ -63,3 +69,5 @@
   [options]="optionsEpsVsDividends"
   (chartInit)="onEpsVsDividendsBarChartInit($event)"
 ></div>
+
+<!-- <p class="tool-purpose">作者本身是軟體工程師，也是一位長期持有金控股的小股民，當初寫這個工具是為了方便自己掌握金控公司的營運狀況，現在把它分享給大家，希望這個工具可以幫助到大家👍。</p> -->
