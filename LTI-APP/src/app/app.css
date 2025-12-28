@@ -32,3 +32,38 @@ h1, h2, h3, h4, h5 {
     padding-left: 10%;
     padding-right: 10%;
 }
+
+.site-footer {
+  margin-top: 60px;
+  padding: 20px 0;
+  border-top: 1px solid #e5e7eb;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #1877f2;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.fb-link:hover {
+  opacity: 0.85;
+}
+
+.fb-icon {
+  width: 18px;
+  height: 18px;
+}
