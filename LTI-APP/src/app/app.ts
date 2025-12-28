@@ -243,6 +243,10 @@ export class App {
     };
 
     this.optionsEpsYoy = {
+      grid: {
+        left: 0,
+        right: 0
+      },
       legend: {
         data: epsOfNYears.map((value, index) => (thisYear - (this.lastNYearsOfEpsYoyControl.value - index)).toString()),
       },
@@ -346,6 +350,10 @@ export class App {
     };
 
     this.optionsEpsVsDividends = {
+      grid: {
+        left: 0,
+        right: 0
+      },
       legend: {
         data: ["EPS", "現金股利", "股票股利"],
       },

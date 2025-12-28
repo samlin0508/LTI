@@ -1,23 +1,34 @@
-h1, h2, h3 {
-    text-align: center;
+h1, h2, h3, h4, h5 {
+    /* text-align: center; */
     /* margin: 0; */
-    padding: 0;
+    padding-left: 10%;
+    padding-right: 10%;
 }
 
 .mat-mdc-form-field {
-    margin-left: 10px;
+    /* margin-left: 10px; */
 }
 
 .stock-selector {
     margin-top: 10px;
-    text-align: center;
+    /* text-align: center; */
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.chart-container {
+    padding-left: 10%;
+    padding-right: 10%;
 }
 
 .tool-purpose {
     width: 80%;
-    margin-left: 10%;
+    padding-left: 10%;
+    padding-right: 10%;
 }
 
 .declaration {
-    text-align: center;
+    text-align: left;
+    padding-left: 10%;
+    padding-right: 10%;
 }
