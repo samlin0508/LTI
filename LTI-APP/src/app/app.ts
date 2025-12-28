@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as echarts from 'echarts/core';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
@@ -12,6 +12,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { Dialog } from './dialog';
 
 echarts.use([BarChart, GridComponent, CanvasRenderer, LegendComponent, TooltipComponent, BrushComponent, ToolboxComponent]);
 
@@ -31,6 +33,8 @@ echarts.use([BarChart, GridComponent, CanvasRenderer, LegendComponent, TooltipCo
   ]
 })
 export class App {
+  dialog = inject(MatDialog);
+
   stockControl: FormControl = new FormControl("2887");
   entities: any[] = [];
 
@@ -72,7 +76,7 @@ export class App {
 
   epsVsDividendsBarChart!: ECharts;
   optionsEpsVsDividends!: EChartsOption;
-  
+
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
@@ -152,9 +156,16 @@ export class App {
       this.apiService.getEps(this.stockControl.value),
       this.apiService.getDividends(this.stockControl.value)
     ])
-    .subscribe(x => {
-      this.renderEpsYoy(x[0]);
-      this.renderEpsVsDividends(x[0], x[1]);
+    .subscribe({
+      next: x => {
+        this.renderEpsYoy(x[0]);
+        this.renderEpsVsDividends(x[0], x[1]);
+      },
+      error: error => {
+        if (error.status === 404) {
+          this.openDialog();
+        }
+      }
     });
   }
 
@@ -203,7 +214,7 @@ export class App {
 
     let epsOfNYears: number[][] = [];
 
-    for(let i = this.lastNYearsOfEpsYoyControl.value; i >= 0 ; i--) {
+    for (let i = this.lastNYearsOfEpsYoyControl.value; i >= 0; i--) {
       let yearN = i > 0 ? thisYear - i : thisYear;
 
       epsOfNYears.push(
@@ -244,7 +255,7 @@ export class App {
         splitArea: { show: false }
       },
       yAxis: {},
-      series: 
+      series:
         epsOfNYears
           .map((value, index) => {
             let yearN = (thisYear - (this.lastNYearsOfEpsYoyControl.value - index)).toString();
@@ -362,12 +373,12 @@ export class App {
               let eps = params.value ? +params.value! : 0;
               let payoutRatio = 0;
 
-              if(eps === 0) {
+              if (eps === 0) {
                 payoutRatio = 0;
               } else {
                 payoutRatio = Math.round(((cash + stock) / eps) * 100);
               }
-              
+
               return `${params.value}\n(${payoutRatio}%)`;
             }
           },
@@ -399,5 +410,17 @@ export class App {
     if (this.epsVsDividendsBarChart) {
       this.epsVsDividendsBarChart.setOption(this.optionsEpsVsDividends);
     }
+  }
+
+  openDialog() {
+    this.dialog.open(
+      Dialog,
+      {
+        data: {
+          title: '請求發生錯誤',
+          content: `⚠️ 無此公司代號(${this.stockControl.value})的數據。`
+        },
+      }
+    );
   }
 }
