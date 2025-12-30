@@ -1,19 +1,19 @@
 h1, h2, h3, h4, h5 {
-    /* text-align: center; */
-    /* margin: 0; */
     padding-left: 10%;
     padding-right: 10%;
 }
 
 .mat-mdc-form-field {
-    /* margin-left: 10px; */
 }
 
-.stock-selector {
+.select-container {
     margin-top: 10px;
-    /* text-align: center; */
     padding-left: 10%;
     padding-right: 10%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
 }
 
 .chart-container {
@@ -25,6 +25,10 @@ h1, h2, h3, h4, h5 {
     width: 80%;
     padding-left: 10%;
     padding-right: 10%;
+}
+
+.query-button {
+  top: -10px;
 }
 
 .declaration {

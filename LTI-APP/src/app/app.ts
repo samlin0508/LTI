@@ -14,6 +14,9 @@ import { Title } from '@angular/platform-browser';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Dialog } from './dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
 
 echarts.use([BarChart, GridComponent, CanvasRenderer, LegendComponent, TooltipComponent, BrushComponent, ToolboxComponent]);
 
@@ -24,7 +27,10 @@ echarts.use([BarChart, GridComponent, CanvasRenderer, LegendComponent, TooltipCo
     NgxEchartsDirective,
     NgxEchartsDirective,
     MatSelectModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatDividerModule
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -33,6 +39,8 @@ echarts.use([BarChart, GridComponent, CanvasRenderer, LegendComponent, TooltipCo
   ]
 })
 export class App {
+  thisYear: number = new Date().getFullYear();
+
   dialog = inject(MatDialog);
 
   stockControl: FormControl = new FormControl("2887");
@@ -68,6 +76,13 @@ export class App {
     name: "最近10年"
   }];
 
+  stocksOfMonthlyEpsComparisonControl: FormControl = new FormControl(["2887", "2890"]);
+  yearsOfMonthlyEpsComparisonControl: FormControl = new FormControl(this.thisYear);
+  yearsOfMonthlyEpsComparison: any[] = [];
+
+  stocksOfYearlyEpsComparisonControl: FormControl = new FormControl(["2887", "2890"]);
+  yearsOfYearlyEpsComparisonControl: FormControl = new FormControl([this.thisYear, this.thisYear - 1]);
+
   paramStream: BehaviorSubject<string> = new BehaviorSubject<string>("");
   paramStream$: Observable<string> = this.paramStream.asObservable();
 
@@ -77,6 +92,12 @@ export class App {
   epsVsDividendsBarChart!: ECharts;
   optionsEpsVsDividends!: EChartsOption;
 
+  monthlyEpsComparisonBarChart!: ECharts;
+  optionsMonthlyEpsComparison!: EChartsOption;
+
+  yearlyEpsComparisonBarChart!: ECharts;
+  optionsYearlyEpsComparison!: EChartsOption;
+
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
@@ -85,8 +106,12 @@ export class App {
   }
 
   ngOnInit(): void {
+    this.initYearsOfMonthlyEpsComparison(10);
+
     this.renderEpsYoy([]);
     this.renderEpsVsDividends([], []);
+    this.renderMonthlyEpsComparison([]);
+    this.renderYearlyEpsComparison([]);
 
     // 方法一
     // forkJoin([
@@ -127,6 +152,8 @@ export class App {
           .subscribe(y => {
             this.stockControl.setValue(y);
             this.fetch();
+            this.onMonthlyEpsComparisonClick(null);
+            this.onYearlyEpsComparisonClick(null);
           });
       });
 
@@ -149,6 +176,15 @@ export class App {
     // );
   }
 
+  initYearsOfMonthlyEpsComparison(howManyYears: number): void {
+    for(let i = this.thisYear ; i > this.thisYear - howManyYears ; i--) {
+      this.yearsOfMonthlyEpsComparison.push({
+        id: i,
+        name: i.toString()
+      });
+    }
+  }
+
   fetch(): void {
     this.setTitle();
 
@@ -163,7 +199,10 @@ export class App {
       },
       error: error => {
         if (error.status === 404) {
-          this.openDialog();
+          this.openDialog({
+            title: '請求發生錯誤',
+            content: `⚠️ 無此公司代號(${this.stockControl.value})的數據。`
+          });
         }
       }
     });
@@ -181,6 +220,42 @@ export class App {
     this.fetch();
   }
 
+  onMonthlyEpsComparisonClick(event: any) {
+    let stocks: string[] = this.stocksOfMonthlyEpsComparisonControl.value;
+
+    if(stocks.length === 0) {
+      this.openDialog({
+        title: '查詢條件不足',
+        content: `⚠️ 請選擇要比較的公司代號。`
+      });
+    }
+
+    forkJoin(stocks.map(x => this.apiService.getEps(x)))
+      .subscribe({
+        next: x => {
+          this.renderMonthlyEpsComparison(x);
+        }
+      });
+  }
+
+  onYearlyEpsComparisonClick(event: any) {
+    let stocks: string[] = this.stocksOfYearlyEpsComparisonControl.value;
+
+    if(stocks.length === 0) {
+      this.openDialog({
+        title: '查詢條件不足',
+        content: `⚠️ 請選擇要比較的公司代號。`
+      });
+    }
+
+    forkJoin(stocks.map(x => this.apiService.getEps(x)))
+      .subscribe({
+        next: x => {
+          this.renderYearlyEpsComparison(x);
+        }
+      });
+  }
+
   setTitle(): void {
     let entity = this.entities.filter(y => y.id === this.stockControl.value)[0];
     this.title.setTitle(`${entity?.id ?? ""} ${entity?.name ?? ""} EPS 趨勢分析`);
@@ -194,11 +269,17 @@ export class App {
     this.epsVsDividendsBarChart = echartsIntance;
   }
 
-  renderEpsYoy(data: any[]): void {
-    let thisYear: number = new Date().getFullYear();
+  onMonthlyEpsComparisonBarChartInit(echartsIntance: any) {
+    this.monthlyEpsComparisonBarChart = echartsIntance;
+  }
 
+  onYearlyEpsComparisonBarChartInit(echartsIntance: any) {
+    this.yearlyEpsComparisonBarChart = echartsIntance;
+  }
+
+  renderEpsYoy(data: any[]): void {
     let xAxisData: string[] = data
-      .filter(x => x.year === thisYear - this.lastNYearsOfEpsYoyControl.value)
+      .filter(x => x.year === this.thisYear - this.lastNYearsOfEpsYoyControl.value)
       .sort((a, b) => {
         if (a.month > b.month) {
           return 1;
@@ -215,7 +296,7 @@ export class App {
     let epsOfNYears: number[][] = [];
 
     for (let i = this.lastNYearsOfEpsYoyControl.value; i >= 0; i--) {
-      let yearN = i > 0 ? thisYear - i : thisYear;
+      let yearN = i > 0 ? this.thisYear - i : this.thisYear;
 
       epsOfNYears.push(
         data
@@ -248,12 +329,12 @@ export class App {
         right: 0
       },
       legend: {
-        data: epsOfNYears.map((value, index) => (thisYear - (this.lastNYearsOfEpsYoyControl.value - index)).toString()),
+        data: epsOfNYears.map((value, index) => (this.thisYear - (this.lastNYearsOfEpsYoyControl.value - index)).toString()),
       },
       tooltip: {},
       xAxis: {
         data: xAxisData,
-        name: '月份',
+        name: '月',
         axisLine: { onZero: true },
         splitLine: { show: false },
         splitArea: { show: false }
@@ -262,7 +343,7 @@ export class App {
       series:
         epsOfNYears
           .map((value, index) => {
-            let yearN = (thisYear - (this.lastNYearsOfEpsYoyControl.value - index)).toString();
+            let yearN = (this.thisYear - (this.lastNYearsOfEpsYoyControl.value - index)).toString();
 
             return {
               name: yearN,
@@ -278,6 +359,7 @@ export class App {
     };
 
     if (this.epsYoyBarChart) {
+      this.epsYoyBarChart.clear();
       this.epsYoyBarChart.setOption(this.optionsEpsYoy);
     }
   }
@@ -286,10 +368,8 @@ export class App {
     dataEps: any[],
     dataDividends: any[]
   ): void {
-    let thisYear: number = new Date().getFullYear();
-
     let xAxisData: number[] = dataEps
-      .filter(x => x.year >= thisYear - this.lastNYearsOfEpsVsDividendsControl.value && x.month === 12)
+      .filter(x => x.year >= this.thisYear - this.lastNYearsOfEpsVsDividendsControl.value && x.month === 12)
       .sort((a, b) => {
         if (a.year > b.year) {
           return 1;
@@ -304,7 +384,7 @@ export class App {
       .map(x => x.year);
 
     let eps: number[] = dataEps
-      .filter(x => x.year >= thisYear - this.lastNYearsOfEpsVsDividendsControl.value && x.year < thisYear && x.month === 12)
+      .filter(x => x.year >= this.thisYear - this.lastNYearsOfEpsVsDividendsControl.value && x.year < this.thisYear && x.month === 12)
       .sort((a, b) => {
         if (a.year > b.year) {
           return 1;
@@ -319,7 +399,7 @@ export class App {
       .map(x => x.eps);
 
     eps.push(
-      dataEps.filter(x => x.year === thisYear && x.eps !== null)
+      dataEps.filter(x => x.year === this.thisYear && x.eps !== null)
         .sort((a, b) => {
           if (a.month < b.month) {
             return 1;
@@ -360,7 +440,7 @@ export class App {
       tooltip: {},
       xAxis: {
         data: xAxisData,
-        name: '西元年',
+        name: '年',
         axisLine: { onZero: true },
         splitLine: { show: false },
         splitArea: { show: false }
@@ -416,18 +496,222 @@ export class App {
     };
 
     if (this.epsVsDividendsBarChart) {
+      this.epsVsDividendsBarChart.clear();
       this.epsVsDividendsBarChart.setOption(this.optionsEpsVsDividends);
     }
   }
 
-  openDialog() {
+  renderMonthlyEpsComparison(data: any[][]): void {
+    let stocks: string[] = this.stocksOfMonthlyEpsComparisonControl.value;
+
+    let xAxisData: string[] = data.length === 0 ? [] : data[0]
+      .filter(x => x.year === +this.yearsOfMonthlyEpsComparisonControl.value)
+      .sort((a, b) => {
+        if (a.month > b.month) {
+          return 1;
+        }
+
+        if (a.month < b.month) {
+          return -1;
+        }
+
+        return 0;
+      })
+      .map(x => x.month.toString().padStart(2, '0'));
+
+    let epsOfStocks: number[][] = [];
+
+    for (let i = 0; i < data.length; i++) {
+      epsOfStocks.push(
+        data[i]
+          .filter(x => x.year === +this.yearsOfMonthlyEpsComparisonControl.value)
+          .sort((a, b) => {
+            if (a.month > b.month) {
+              return 1;
+            }
+
+            if (a.month < b.month) {
+              return -1;
+            }
+
+            return 0;
+          })
+          .map(x => x.eps_month)
+      );
+    }
+
+    var emphasisStyle = {
+      itemStyle: {
+        shadowBlur: 10,
+        shadowColor: 'rgba(0,0,0,0.3)'
+      }
+    };
+
+    this.optionsMonthlyEpsComparison = {
+      grid: {
+        left: 0,
+        right: 0
+      },
+      legend: {
+        data: epsOfStocks.length === 0 ? [] : stocks
+          .map(x => {
+            let entity = this.entities.filter(y => y.id === x)[0];
+
+            return `${entity?.id} ${entity?.name}`;
+          }),
+      },
+      tooltip: {},
+      xAxis: {
+        data: xAxisData,
+        name: '月',
+        axisLine: { onZero: true },
+        splitLine: { show: false },
+        splitArea: { show: false }
+      },
+      yAxis: {},
+      series:
+        epsOfStocks
+          .map((value, index) => {
+            let entity = this.entities.filter(x => x.id === stocks[index])[0];
+
+            return {
+              name: `${entity.id} ${entity.name}`,
+              type: 'bar',
+              stack: `${entity.id} ${entity.name}`,
+              emphasis: emphasisStyle,
+              label: {
+                show: true
+              },
+              data: value
+            };
+          })
+    };
+
+    if (this.monthlyEpsComparisonBarChart) {
+      this.monthlyEpsComparisonBarChart.clear();
+      this.monthlyEpsComparisonBarChart.setOption(this.optionsMonthlyEpsComparison);
+    }
+  }
+
+  renderYearlyEpsComparison(data: any[][]): void {
+    let years: number[] = this.yearsOfYearlyEpsComparisonControl.value;
+    let stocks: string[] = this.stocksOfYearlyEpsComparisonControl.value;
+
+    let xAxisData: string[] = years
+      .sort((a, b) => {
+        if (a > b) {
+          return 1;
+        }
+
+        if (a < b) {
+          return -1;
+        }
+
+        return 0;
+      })
+      .map(x => x.toString());
+
+    let epsOfStocks: number[][] = [];
+
+    for (let i = 0; i < data.length; i++) {
+      let temp = data[i].filter(x => years.includes(x.year) && x.month === 12);
+
+      if(years.includes(this.thisYear)) {
+        temp = temp.filter(x => x.year !== this.thisYear);
+      }
+
+      epsOfStocks.push(
+        temp
+          .sort((a, b) => {
+            if (a.year > b.year) {
+              return 1;
+            }
+
+            if (a.year < b.year) {
+              return -1;
+            }
+
+            return 0;
+          })
+          .map(x => x.eps)
+      );
+
+      if(years.includes(this.thisYear)) {
+        epsOfStocks[i].push(
+          data[i].filter(x => x.year === this.thisYear && x.eps !== null)
+            .sort((a, b) => {
+              if (a.month < b.month) {
+                return 1;
+              }
+
+              if (a.month > b.month) {
+                return -1;
+              }
+
+              return 0;
+            })[0]?.eps
+        );
+      }
+    }
+
+    var emphasisStyle = {
+      itemStyle: {
+        shadowBlur: 10,
+        shadowColor: 'rgba(0,0,0,0.3)'
+      }
+    };
+
+    this.optionsYearlyEpsComparison = {
+      grid: {
+        left: 0,
+        right: 0
+      },
+      legend: {
+        data: epsOfStocks.length === 0 ? [] : stocks
+          .map(x => {
+            let entity = this.entities.filter(y => y.id === x)[0];
+
+            return `${entity?.id} ${entity?.name}`;
+          }),
+      },
+      tooltip: {},
+      xAxis: {
+        data: xAxisData,
+        name: '年',
+        axisLine: { onZero: true },
+        splitLine: { show: false },
+        splitArea: { show: false }
+      },
+      yAxis: {},
+      series:
+        epsOfStocks
+          .map((value, index) => {
+            let entity = this.entities.filter(x => x.id === stocks[index])[0];
+
+            return {
+              name: `${entity.id} ${entity.name}`,
+              type: 'bar',
+              stack: `${entity.id} ${entity.name}`,
+              emphasis: emphasisStyle,
+              label: {
+                show: true
+              },
+              data: value
+            };
+          })
+    };
+
+    if (this.yearlyEpsComparisonBarChart) {
+      this.yearlyEpsComparisonBarChart.clear();
+      this.yearlyEpsComparisonBarChart.setOption(this.optionsYearlyEpsComparison);
+    }
+  }
+
+  openDialog(data: any) {
     this.dialog.open(
       Dialog,
       {
-        data: {
-          title: '請求發生錯誤',
-          content: `⚠️ 無此公司代號(${this.stockControl.value})的數據。`
-        },
+        data: data
       }
     );
   }

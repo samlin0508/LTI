@@ -2,7 +2,7 @@
 
 <p class="declaration">這是一個追蹤金融股 EPS 以及股利趨勢的小工具，主要是讓長期持有金融股的股民有一個方便的介面可以快速掌握 EPS 動態以及過往股利的派發紀錄。</p>
 
-<div class="stock-selector">
+<div class="select-container">
   <mat-form-field>
     <mat-label>公司代號</mat-label>
 
@@ -26,7 +26,7 @@
 
 <p class="declaration">由於官方並沒有提供每個月的 EPS，這裡在計算每個月 EPS 的方式是採用：第 N 月 EPS = 第 N 月累計 EPS - 第 N - 1 月 累計 EPS。</p>
 
-<div class="stock-selector">
+<div class="select-container">
   <mat-form-field>
     <mat-label>查看區間</mat-label>
 
@@ -49,7 +49,7 @@
   (chartInit)="onEpsYoyBarChartInit($event)"
 ></div>
 
-<h2>EPS vs 股利</h2>
+<h2 id="epsVsDividends">EPS vs 股利</h2>
 
 <h4>比較最近 N 年的 EPS 以及對應的股利（現金股利以及股票股利），可以透過下方的查看區間選擇想要查看的年份。</h4>
 
@@ -57,7 +57,7 @@
 
 <p class="declaration">百分比表示當年度的配發率。</p>
 
-<div class="stock-selector">
+<div class="select-container">
   <mat-form-field>
     <mat-label>查看區間</mat-label>
 
@@ -80,12 +80,111 @@
   (chartInit)="onEpsVsDividendsBarChartInit($event)"
 ></div>
 
-<p class="declaration">⚠️ 網站的數據已盡可能的追求正確，但如果您發現數字跟您所認知的有差異時，還請以 MOPS 公開資訊觀測站的數據為主。</p>
+<mat-divider></mat-divider>
+
+<h2 id="monthlyEpsComparison">同月 EPS 在不同公司間做比較</h2>
+
+<h4>選擇多個公司代號進行同月 EPS 比較，可以透過下方的查看區間選擇想要查看的年份。</h4>
+
+<div class="select-container">
+  <mat-form-field>
+    <mat-label>查看區間</mat-label>
+
+    <mat-select 
+      [formControl]="yearsOfMonthlyEpsComparisonControl"
+      placeholder="請選擇"
+    >
+      @for (option of yearsOfMonthlyEpsComparison; track option) {
+        <mat-option [value]="option.id">{{ (`${option.name}`) }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>公司代號</mat-label>
+
+    <mat-select 
+      [formControl]="stocksOfMonthlyEpsComparisonControl"
+      multiple
+      placeholder="請選擇"
+    >
+      @for (option of entities; track option) {
+        <mat-option [value]="option.id">{{ (`${option.id} ${option.name}`) }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <button 
+    matFab
+    class="query-button"
+    (click)="onMonthlyEpsComparisonClick($event)"
+  >
+    <mat-icon>query_stats</mat-icon>
+  </button>
+</div>
+
+<div 
+  echarts 
+  class="chart-container" 
+  [options]="optionsMonthlyEpsComparison"
+  (chartInit)="onMonthlyEpsComparisonBarChartInit($event)"
+></div>
+
+<h2 id="yearlyEpsComparison">同年 EPS 在不同公司間做比較</h2>
+
+<h4>選擇多個公司代號進行同年 EPS 比較，可以透過下方的查看區間選擇想要查看的年份。</h4>
+
+<div class="select-container">
+  <mat-form-field>
+    <mat-label>查看區間</mat-label>
+
+    <mat-select 
+      [formControl]="yearsOfYearlyEpsComparisonControl"
+      multiple
+      placeholder="請選擇"
+    >
+      @for (option of yearsOfMonthlyEpsComparison; track option) {
+        <mat-option [value]="option.id">{{ (`${option.name}`) }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>公司代號</mat-label>
+
+    <mat-select 
+      [formControl]="stocksOfYearlyEpsComparisonControl"
+      multiple
+      placeholder="請選擇"
+    >
+      @for (option of entities; track option) {
+        <mat-option [value]="option.id">{{ (`${option.id} ${option.name}`) }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <button 
+    matFab
+    class="query-button"
+    (click)="onYearlyEpsComparisonClick($event)"
+  >
+    <mat-icon>query_stats</mat-icon>
+  </button>
+</div>
+
+<div 
+  echarts 
+  class="chart-container" 
+  [options]="optionsYearlyEpsComparison"
+  (chartInit)="onYearlyEpsComparisonBarChartInit($event)"
+></div>
+
+<p class="declaration">⚠️ 網站的數據盡可能的追求正確，但如果您發現數字跟您所認知的有差異時，還請以 MOPS 公開資訊觀測站的數據為主。</p>
 
 <footer class="site-footer">
   <div class="footer-content">
     <a
-      href="https://www.facebook.com/profile.php?id=61585849526630"
+      href="https://www.facebook.com/undefined.notes"
       target="_blank"
       rel="noopener noreferrer"
       class="fb-link"

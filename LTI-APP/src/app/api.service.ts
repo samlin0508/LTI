@@ -6,7 +6,8 @@ import { EMPTY, Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ApiService {
-  private apiUrl = 'https://storage.googleapis.com/lti-assets';
+  // private apiUrl = 'https://storage.googleapis.com/lti-assets';
+  private apiUrl = 'https://samlin0508.github.io/LTI-DATA';
 
   constructor(private http: HttpClient) { }
 
