@@ -364,6 +364,9 @@ export class App {
               label: {
                 show: true
               },
+              itemStyle: {
+                color: +yearN === this.thisYear ? this.entities.filter(x => x.id === this.stockControl.value)[0]?.color : undefined,
+              },
               data: value
             };
           })
@@ -481,6 +484,9 @@ export class App {
               return `${params.value}\n(${payoutRatio}%)`;
             }
           },
+          itemStyle: {
+            color: this.entities.filter(x => x.id === this.stockControl.value)[0]?.color,
+          },
           data: eps
         },
         {
@@ -491,6 +497,9 @@ export class App {
           label: {
             show: true
           },
+          itemStyle: {
+            color: "burlywood"
+          },
           data: cashDividends
         },
         {
@@ -500,6 +509,9 @@ export class App {
           emphasis: emphasisStyle,
           label: {
             show: true
+          },
+          itemStyle: {
+            color: "#4bbebe"
           },
           data: stockDividends
         }
@@ -592,6 +604,9 @@ export class App {
               emphasis: emphasisStyle,
               label: {
                 show: true
+              },
+              itemStyle: {
+                color: entity.color,
               },
               data: value
             };
@@ -706,6 +721,9 @@ export class App {
               emphasis: emphasisStyle,
               label: {
                 show: true
+              },
+              itemStyle: {
+                color: entity.color,
               },
               data: value
             };
