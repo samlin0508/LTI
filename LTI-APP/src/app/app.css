@@ -57,11 +57,14 @@ main {
 }
 
 .site-footer {
-  margin-top: 60px;
-  padding: 20px 0;
-  border-top: 1px solid #e5e7eb;
-  font-size: 14px;
-  color: #6b7280;
+  background-image: url("../../public/cover-footer.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.footer-mask {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 40px 0;
 }
 
 .footer-content {
@@ -71,6 +74,19 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
+  color: #d1d5db;
+  font-size: 14px;
+}
+
+.footer-links a {
+  margin-left: 16px;
+  color: #9ca3af;
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: #ffffff;
+  opacity: 0.85;
 }
 
 .fb-link {
@@ -80,10 +96,6 @@ main {
   color: #1877f2;
   text-decoration: none;
   font-weight: 500;
-}
-
-.fb-link:hover {
-  opacity: 0.85;
 }
 
 .fb-icon {

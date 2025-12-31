@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import * as echarts from 'echarts/core';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import { BarChart } from 'echarts/charts';
-import { BrushComponent, GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from 'echarts/components';
+import { BrushComponent, GraphicComponent, GridComponent, LegendComponent, ToolboxComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import { ECharts, EChartsOption } from 'echarts';
 import { ApiService } from './api.service';
@@ -19,7 +19,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 
-echarts.use([BarChart, GridComponent, CanvasRenderer, LegendComponent, TooltipComponent, BrushComponent, ToolboxComponent]);
+echarts.use([BarChart, GridComponent, CanvasRenderer, LegendComponent, TooltipComponent, BrushComponent, ToolboxComponent, GraphicComponent]);
 
 @Component({
   selector: 'app-root',
@@ -421,6 +421,19 @@ export class App {
         splitArea: { show: false }
       },
       yAxis: {},
+      graphic: {
+        elements: [{
+          type: 'image',
+          style: {
+            image: 'cover.png',
+            opacity: 0.1,
+          },
+          left: 0,
+          top: 0,
+          scaleX: 1,
+          scaleY: 1
+        }]
+      },
       series:
         epsOfNYears
           .map((value, index) => {
@@ -530,6 +543,32 @@ export class App {
         splitArea: { show: false }
       },
       yAxis: {},
+      graphic: {
+        elements: [{
+          type: 'text',
+          style: {
+              text: 'Undefined - 雜記',
+              font: '25px sans-serif',
+              fill: '#ccc',
+              opacity: 0.7
+          },
+          left: 0,
+          top: 0,
+        }]
+      },
+      // graphic: {
+      //   elements: [{
+      //     type: 'image',
+      //     style: {
+      //       image: 'cover.png',
+      //       opacity: 0.1,
+      //     },
+      //     left: 0,
+      //     top: 0,
+      //     scaleX: 1,
+      //     scaleY: 1
+      //   }]
+      // },
       series: [
         {
           name: "EPS",
@@ -662,6 +701,19 @@ export class App {
         splitArea: { show: false }
       },
       yAxis: {},
+      graphic: {
+        elements: [{
+          type: 'image',
+          style: {
+            image: 'cover.png',
+            opacity: 0.1,
+          },
+          left: 0,
+          top: 0,
+          scaleX: 1,
+          scaleY: 1
+        }]
+      },
       series:
         epsOfStocks
           .map((value, index) => {
@@ -779,6 +831,32 @@ export class App {
         splitArea: { show: false }
       },
       yAxis: {},
+      graphic: {
+        elements: [{
+          type: 'text',
+          style: {
+              text: 'Undefined - 雜記',
+              font: '25px sans-serif',
+              fill: '#ccc',
+              opacity: 0.7
+          },
+          left: 0,
+          top: 0,
+        }]
+      },
+      // graphic: {
+      //   elements: [{
+      //     type: 'image',
+      //     style: {
+      //       image: 'cover.png',
+      //       opacity: 0.1,
+      //     },
+      //     left: 0,
+      //     top: 0,
+      //     scaleX: 1,
+      //     scaleY: 1
+      //   }]
+      // },
       series:
         epsOfStocks
           .map((value, index) => {
