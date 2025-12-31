@@ -1,3 +1,44 @@
+.site-header {
+  height: 320px; /* 可依你網站調整 */
+  background-image: url("../../public/cover.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.header-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35); /* 讓文字更清楚 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  text-align: center;
+}
+
+.header-overlay h1 {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.header-overlay p {
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .site-header {
+    height: 200px;
+  }
+
+  .header-overlay h1 {
+    font-size: 22px;
+  }
+}
+
 main {
   padding-left: 10%;
   padding-right: 10%;
