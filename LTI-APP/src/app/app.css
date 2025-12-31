@@ -1,40 +1,18 @@
-h1, h2, h3, h4, h5 {
-    padding-left: 10%;
-    padding-right: 10%;
-}
-
-.mat-mdc-form-field {
+main {
+  padding-left: 10%;
+  padding-right: 10%;
 }
 
 .select-container {
-    margin-top: 10px;
-    padding-left: 10%;
-    padding-right: 10%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 8px;
-}
-
-.chart-container {
-    padding-left: 10%;
-    padding-right: 10%;
-}
-
-.tool-purpose {
-    width: 80%;
-    padding-left: 10%;
-    padding-right: 10%;
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
 }
 
 .query-button {
   top: -10px;
-}
-
-.declaration {
-    text-align: left;
-    padding-left: 10%;
-    padding-right: 10%;
 }
 
 .site-footer {

@@ -9,7 +9,7 @@ import { ECharts, EChartsOption } from 'echarts';
 import { ApiService } from './api.service';
 import { BehaviorSubject, debounceTime, distinctUntilChanged, forkJoin, Observable } from 'rxjs';
 import { MatSelectModule } from '@angular/material/select';
-import { CommonModule } from '@angular/common';
+import { CommonModule, LocationStrategy } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -17,6 +17,7 @@ import { Dialog } from './dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 echarts.use([BarChart, GridComponent, CanvasRenderer, LegendComponent, TooltipComponent, BrushComponent, ToolboxComponent]);
 
@@ -30,7 +31,8 @@ echarts.use([BarChart, GridComponent, CanvasRenderer, LegendComponent, TooltipCo
     ReactiveFormsModule,
     MatIconModule,
     MatButtonModule,
-    MatDividerModule
+    MatDividerModule,
+    ClipboardModule
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -39,6 +41,8 @@ echarts.use([BarChart, GridComponent, CanvasRenderer, LegendComponent, TooltipCo
   ]
 })
 export class App {
+  baseUrl!: string;
+
   thisYear: number = new Date().getFullYear();
 
   dialog = inject(MatDialog);
@@ -101,8 +105,10 @@ export class App {
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
-    private title: Title
+    private title: Title,
+    private locationStrategy: LocationStrategy
   ) {
+    this.baseUrl = `${window.location.origin}${locationStrategy.getBaseHref()}`;
   }
 
   ngOnInit(): void {
@@ -183,6 +189,11 @@ export class App {
         name: i.toString()
       });
     }
+  }
+
+  getEntityName(id: string): string {
+    let entity = this.entities.filter(x => x.id === id)[0];
+    return `${entity?.id ?? ""} ${entity?.name ?? ""}`;
   }
 
   fetch(): void {
