@@ -61,6 +61,7 @@
   <div 
     echarts
     [options]="optionsEpsYoy"
+    [theme]="'dark'"
     (chartInit)="onEpsYoyBarChartInit($event)"
   ></div>
 
@@ -98,6 +99,7 @@
   <div 
     echarts 
     [options]="optionsEpsVsDividends"
+    [theme]="'dark'"
     (chartInit)="onEpsVsDividendsBarChartInit($event)"
   ></div>
 
@@ -156,6 +158,7 @@
   <div 
     echarts 
     [options]="optionsMonthlyEpsComparison"
+    [theme]="'dark'"
     (chartInit)="onMonthlyEpsComparisonBarChartInit($event)"
   ></div>
 
@@ -213,6 +216,7 @@
   <div 
     echarts 
     [options]="optionsYearlyEpsComparison"
+    [theme]="'dark'"
     (chartInit)="onYearlyEpsComparisonBarChartInit($event)"
   ></div>
 

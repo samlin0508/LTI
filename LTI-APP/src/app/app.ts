@@ -421,19 +421,19 @@ export class App {
         splitArea: { show: false }
       },
       yAxis: {},
-      graphic: {
-        elements: [{
-          type: 'image',
-          style: {
-            image: 'cover.png',
-            opacity: 0.1,
-          },
-          left: 0,
-          top: 0,
-          scaleX: 1,
-          scaleY: 1
-        }]
-      },
+      // graphic: {
+      //   elements: [{
+      //     type: 'image',
+      //     style: {
+      //       image: 'cover.png',
+      //       opacity: 0.1,
+      //     },
+      //     left: 0,
+      //     top: 0,
+      //     scaleX: 1,
+      //     scaleY: 1
+      //   }]
+      // },
       series:
         epsOfNYears
           .map((value, index) => {
@@ -543,19 +543,19 @@ export class App {
         splitArea: { show: false }
       },
       yAxis: {},
-      graphic: {
-        elements: [{
-          type: 'text',
-          style: {
-              text: 'Undefined - 雜記',
-              font: '25px sans-serif',
-              fill: '#ccc',
-              opacity: 0.7
-          },
-          left: 0,
-          top: 0,
-        }]
-      },
+      // graphic: {
+      //   elements: [{
+      //     type: 'text',
+      //     style: {
+      //         text: 'Undefined - 雜記',
+      //         font: '25px sans-serif',
+      //         fill: '#ccc',
+      //         opacity: 0.7
+      //     },
+      //     left: 0,
+      //     top: 0,
+      //   }]
+      // },
       // graphic: {
       //   elements: [{
       //     type: 'image',
@@ -701,19 +701,19 @@ export class App {
         splitArea: { show: false }
       },
       yAxis: {},
-      graphic: {
-        elements: [{
-          type: 'image',
-          style: {
-            image: 'cover.png',
-            opacity: 0.1,
-          },
-          left: 0,
-          top: 0,
-          scaleX: 1,
-          scaleY: 1
-        }]
-      },
+      // graphic: {
+      //   elements: [{
+      //     type: 'image',
+      //     style: {
+      //       image: 'cover.png',
+      //       opacity: 0.1,
+      //     },
+      //     left: 0,
+      //     top: 0,
+      //     scaleX: 1,
+      //     scaleY: 1
+      //   }]
+      // },
       series:
         epsOfStocks
           .map((value, index) => {
@@ -831,19 +831,19 @@ export class App {
         splitArea: { show: false }
       },
       yAxis: {},
-      graphic: {
-        elements: [{
-          type: 'text',
-          style: {
-              text: 'Undefined - 雜記',
-              font: '25px sans-serif',
-              fill: '#ccc',
-              opacity: 0.7
-          },
-          left: 0,
-          top: 0,
-        }]
-      },
+      // graphic: {
+      //   elements: [{
+      //     type: 'text',
+      //     style: {
+      //         text: 'Undefined - 雜記',
+      //         font: '25px sans-serif',
+      //         fill: '#ccc',
+      //         opacity: 0.7
+      //     },
+      //     left: 0,
+      //     top: 0,
+      //   }]
+      // },
       // graphic: {
       //   elements: [{
       //     type: 'image',
