@@ -101,7 +101,7 @@
 
     <button 
       matIconButton
-      [cdkCopyToClipboard]="`${baseUrl}?id=${stockControl.value}#monthlyEpsComparison`"
+      [cdkCopyToClipboard]="`${baseUrl}?id=${stockControl.value}&ids=${stocksOfMonthlyEpsComparisonControl.value.join(',')}&year=${yearsOfMonthlyEpsComparisonControl.value}#monthlyEpsComparison`"
     >
       <mat-icon>link</mat-icon>
     </button>
@@ -157,7 +157,7 @@
 
     <button 
       matIconButton
-      [cdkCopyToClipboard]="`${baseUrl}?id=${stockControl.value}#yearlyEpsComparison`"
+      [cdkCopyToClipboard]="`${baseUrl}?id=${stockControl.value}&ids=${stocksOfYearlyEpsComparisonControl.value.join(',')}&years=${yearsOfYearlyEpsComparisonControl.value}#yearlyEpsComparison`"
     >
       <mat-icon>link</mat-icon>
     </button>

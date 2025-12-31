@@ -87,8 +87,14 @@ export class App {
   stocksOfYearlyEpsComparisonControl: FormControl = new FormControl(["2887", "2890"]);
   yearsOfYearlyEpsComparisonControl: FormControl = new FormControl([this.thisYear, this.thisYear - 1]);
 
-  paramStream: BehaviorSubject<string> = new BehaviorSubject<string>("");
-  paramStream$: Observable<string> = this.paramStream.asObservable();
+  epsYoyParamStream: BehaviorSubject<string> = new BehaviorSubject<string>("");
+  epsYoyParamStream$: Observable<string> = this.epsYoyParamStream.asObservable();
+
+  monthlyEpsComparisonParamStream: BehaviorSubject<any> = new BehaviorSubject<any>({});
+  monthlyEpsComparisonParamStream$: Observable<any> = this.monthlyEpsComparisonParamStream.asObservable();
+
+  yearlyEpsComparisonParamStream: BehaviorSubject<any> = new BehaviorSubject<any>({});
+  yearlyEpsComparisonParamStream$: Observable<any> = this.yearlyEpsComparisonParamStream.asObservable();
 
   epsYoyBarChart!: ECharts;
   optionsEpsYoy!: EChartsOption;
@@ -150,7 +156,7 @@ export class App {
             return 0;
           });
 
-        this.paramStream$
+        this.epsYoyParamStream$
           .pipe(
             debounceTime(50),
             distinctUntilChanged()
@@ -158,18 +164,65 @@ export class App {
           .subscribe(y => {
             this.stockControl.setValue(y);
             this.fetch();
+          });
+
+        this.monthlyEpsComparisonParamStream$
+          .pipe(
+            debounceTime(50),
+            distinctUntilChanged()
+          )
+          .subscribe(y => {
+            this.yearsOfMonthlyEpsComparisonControl.setValue(y.year);
+            this.stocksOfMonthlyEpsComparisonControl.setValue(y.ids);
             this.onMonthlyEpsComparisonClick(null);
+          });
+
+        this.yearlyEpsComparisonParamStream$
+          .pipe(
+            debounceTime(50),
+            distinctUntilChanged()
+          )
+          .subscribe(y => {
+            this.yearsOfYearlyEpsComparisonControl.setValue(y.years);
+            this.stocksOfYearlyEpsComparisonControl.setValue(y.ids);
             this.onYearlyEpsComparisonClick(null);
           });
       });
 
-    this.paramStream.next("2887");
+    this.epsYoyParamStream.next("2887");
+
+    this.monthlyEpsComparisonParamStream.next({
+      year: this.thisYear,
+      ids: ["2887", "2890"]
+    });
+
+    this.yearlyEpsComparisonParamStream.next({
+      years: [this.thisYear, this.thisYear - 1],
+      ids: ["2887", "2890"]
+    });
 
     this.route.queryParamMap.subscribe(params => {
       let id: any = params.get('id');
+      let ids: any = params.get('ids');
+      let year: any = params.get('year');
+      let years: any = params.get('years');
 
       if (id) {
-        this.paramStream.next(id);
+        this.epsYoyParamStream.next(id);
+      }
+
+      if(ids && year) {
+        this.monthlyEpsComparisonParamStream.next({
+          year: +year,
+          ids: ids.split(",")
+        });
+      }
+
+      if(ids && years) {
+        this.yearlyEpsComparisonParamStream.next({
+          years: (years.split(",") as string[]).map(x => +x),
+          ids: ids.split(",")
+        });
       }
     });
 
@@ -212,7 +265,8 @@ export class App {
         if (error.status === 404) {
           this.openDialog({
             title: '請求發生錯誤',
-            content: `⚠️ 無此公司代號(${this.stockControl.value})的數據。`
+            // content: `⚠️ 無此公司代號(${this.stockControl.value})的數據。`
+            content: `⚠️ ${error.url}`
           });
         }
       }
@@ -245,6 +299,14 @@ export class App {
       .subscribe({
         next: x => {
           this.renderMonthlyEpsComparison(x);
+        },
+        error: error => {
+          if (error.status === 404) {
+            this.openDialog({
+              title: '請求發生錯誤',
+              content: `⚠️ ${error.url}`
+            });
+          }
         }
       });
   }
@@ -263,6 +325,14 @@ export class App {
       .subscribe({
         next: x => {
           this.renderYearlyEpsComparison(x);
+        },
+        error: error => {
+          if (error.status === 404) {
+            this.openDialog({
+              title: '請求發生錯誤',
+              content: `⚠️ ${error.url}`
+            });
+          }
         }
       });
   }
