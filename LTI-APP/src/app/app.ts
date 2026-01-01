@@ -45,12 +45,14 @@ export class App {
 
   thisYear: number = new Date().getFullYear();
 
+  currentMonth: number = new Date().getMonth();
+
   dialog = inject(MatDialog);
 
   stockControl: FormControl = new FormControl("2887");
   entities: any[] = [];
 
-  lastNYearsOfEpsYoyControl: FormControl = new FormControl(1);
+  lastNYearsOfEpsYoyControl: FormControl = new FormControl(this.currentMonth > 0 ? 1 : 2);
   lastNYearsOfEpsYoy: any[] = [{
     id: 1,
     name: "最近2年"
@@ -81,11 +83,11 @@ export class App {
   }];
 
   stocksOfMonthlyEpsComparisonControl: FormControl = new FormControl(["2887", "2890"]);
-  yearsOfMonthlyEpsComparisonControl: FormControl = new FormControl(this.thisYear);
+  yearsOfMonthlyEpsComparisonControl: FormControl = new FormControl(this.currentMonth > 0 ? this.thisYear : this.thisYear - 1);
   yearsOfMonthlyEpsComparison: any[] = [];
 
   stocksOfYearlyEpsComparisonControl: FormControl = new FormControl(["2887", "2890"]);
-  yearsOfYearlyEpsComparisonControl: FormControl = new FormControl([this.thisYear, this.thisYear - 1]);
+  yearsOfYearlyEpsComparisonControl: FormControl = new FormControl(this.currentMonth > 0 ? [this.thisYear, this.thisYear - 1] : [this.thisYear - 1, this.thisYear - 2]);
 
   epsYoyParamStream: BehaviorSubject<string> = new BehaviorSubject<string>("");
   epsYoyParamStream$: Observable<string> = this.epsYoyParamStream.asObservable();
@@ -192,12 +194,12 @@ export class App {
     this.epsYoyParamStream.next("2887");
 
     this.monthlyEpsComparisonParamStream.next({
-      year: this.thisYear,
+      year: this.currentMonth > 0 ? this.thisYear : this.thisYear - 1,
       ids: ["2887", "2890"]
     });
 
     this.yearlyEpsComparisonParamStream.next({
-      years: [this.thisYear, this.thisYear - 1],
+      years: this.currentMonth > 0 ? [this.thisYear, this.thisYear - 1] : [this.thisYear - 1, this.thisYear - 2],
       ids: ["2887", "2890"]
     });
 
@@ -481,7 +483,7 @@ export class App {
       .map(x => x.year);
 
     let eps: number[] = dataEps
-      .filter(x => x.year >= this.thisYear - this.lastNYearsOfEpsVsDividendsControl.value && x.year < this.thisYear && x.month === 12)
+      .filter(x => x.year >= this.thisYear - this.lastNYearsOfEpsVsDividendsControl.value && x.year < this.thisYear - 1 && x.month === 12)
       .sort((a, b) => {
         if (a.year > b.year) {
           return 1;
@@ -494,6 +496,21 @@ export class App {
         return 0;
       })
       .map(x => x.eps);
+
+    eps.push(
+      dataEps.filter(x => x.year === this.thisYear - 1 && x.eps !== null)
+        .sort((a, b) => {
+          if (a.month < b.month) {
+            return 1;
+          }
+
+          if (a.month > b.month) {
+            return -1;
+          }
+
+          return 0;
+        })[0]?.eps
+    );
 
     eps.push(
       dataEps.filter(x => x.year === this.thisYear && x.eps !== null)
@@ -764,6 +781,10 @@ export class App {
     for (let i = 0; i < data.length; i++) {
       let temp = data[i].filter(x => years.includes(x.year) && x.month === 12);
 
+      if(years.includes(this.thisYear - 1)) {
+        temp = temp.filter(x => x.year !== this.thisYear - 1);
+      }
+
       if(years.includes(this.thisYear)) {
         temp = temp.filter(x => x.year !== this.thisYear);
       }
@@ -783,6 +804,23 @@ export class App {
           })
           .map(x => x.eps)
       );
+
+      if(years.includes(this.thisYear - 1)) {
+        epsOfStocks[i].push(
+          data[i].filter(x => x.year === this.thisYear - 1 && x.eps !== null)
+            .sort((a, b) => {
+              if (a.month < b.month) {
+                return 1;
+              }
+
+              if (a.month > b.month) {
+                return -1;
+              }
+
+              return 0;
+            })[0]?.eps
+        );
+      }
 
       if(years.includes(this.thisYear)) {
         epsOfStocks[i].push(
