@@ -1,6 +1,6 @@
 .site-header {
-  height: 320px; /* 可依你網站調整 */
-  background-image: url("../../public/cover.png");
+  height: 440px; /* 可依你網站調整 */
+  background-image: url("../../public/cover-header.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
