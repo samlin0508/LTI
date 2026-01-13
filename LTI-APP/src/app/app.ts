@@ -341,7 +341,7 @@ export class App {
 
   setTitle(): void {
     let entity = this.entities.filter(y => y.id === this.stockControl.value)[0];
-    this.title.setTitle(`${entity?.id ?? ""} ${entity?.name ?? ""} EPS 趨勢分析`);
+    this.title.setTitle(`${entity?.id ?? ""} ${entity?.name ?? ""} EPS 趨勢分析 | Undefined - 雜記`);
   }
 
   onEpsYoyBarChartInit(echartsIntance: any) {
