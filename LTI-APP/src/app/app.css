@@ -56,6 +56,24 @@ main {
   top: -10px;
 }
 
+.post-cta {
+  margin: 48px 0;
+  text-align: center;
+}
+
+.post-cta-button {
+  height: 50px;
+  background-image: url("../../public/facebook-cta-button-medium.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.post-cta-button:hover {
+  transform: scale(1.05);
+  filter: brightness(1.08);
+}
+
 .site-footer {
   background-image: url("../../public/cover-footer.png");
   background-size: cover;
